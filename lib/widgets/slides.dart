@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:slideshow_flutter_app/providers/page_provider.dart';
 import 'package:slideshow_flutter_app/widgets/slide.dart';
 
 // Este widget debe ser StatefulWidget, ya que se necesita obtener información de su estado actual y comunicar esa información a otras partes de mi aplicación
@@ -21,8 +23,11 @@ class _SlidesState extends State<Slides> {
     // añadir un listener al controlador de página para que esté atento a cualquier cambio
     pageViewController.addListener(() {
       // Imprimir la página actual
-      // ignore: avoid_print
-      print('Página actual: ${pageViewController.page}');
+      // print('Página actual: ${pageViewController.page}');
+
+      // Obtener la instancia de mi PageProvider y establecer la nueva página seleccionada
+      Provider.of<PageProvider>(context, listen: false).currentPage =
+          pageViewController.page!;
     });
     super.initState();
   }
