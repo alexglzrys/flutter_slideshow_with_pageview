@@ -3,23 +3,39 @@ import 'package:provider/provider.dart';
 import 'package:slideshow_flutter_app/providers/page_provider.dart';
 
 class Slideshow extends StatelessWidget {
-  const Slideshow({super.key, required this.slides, required this.color});
+  const Slideshow(
+      {super.key,
+      required this.slides,
+      required this.buttonPrimaryColor,
+      required this.buttonSecondaryColor,
+      this.buttonTop = false});
   // Listado de widgets a mostrar dentro del PageView
   final List<Widget> slides;
-  final Color color;
+  // Color de los botones indicadores
+  final Color buttonPrimaryColor;
+  final Color buttonSecondaryColor;
+  // Posición del contenedor de botones
+  final bool buttonTop;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          // PageView por defecto ocupa el 100% del viewport del dispositivo.
-          // Si se desea usar junto a otros widgets, es importanet asignarle un área limitada donde se pueda expandir.
-          Expanded(
-            child: _Slides(slides),
-          ),
-          _Dots(slides.length, color),
-        ],
+    // Al declarar el contenedor de los botones en la parte superior, este se ve afectado por el notch, por ello el todo el contenido se declara dentro de un área segura con SafeArea
+    return SafeArea(
+      child: Center(
+        child: Column(
+          children: [
+            if (buttonTop)
+              _Dots(slides.length, buttonPrimaryColor, buttonSecondaryColor),
+            // PageView por defecto ocupa el 100% del viewport del dispositivo.
+            // Si se desea usar junto a otros widgets, es importanet asignarle un área limitada donde se pueda expandir.
+            Expanded(
+              child: _Slides(slides),
+            ),
+
+            if (!buttonTop)
+              _Dots(slides.length, buttonPrimaryColor, buttonSecondaryColor),
+          ],
+        ),
       ),
     );
   }
@@ -95,12 +111,14 @@ class _Slide extends StatelessWidget {
 class _Dots extends StatelessWidget {
   const _Dots(
     this.numDots,
-    this.color, {
+    this.buttonPrimaryColor,
+    this.buttonSecondaryColor, {
     super.key,
   });
   // El número de puntos a dibujar en pantalla (se debe corresponder con la cantidad de slides)
   final int numDots;
-  final Color color;
+  final Color buttonPrimaryColor;
+  final Color buttonSecondaryColor;
 
   @override
   Widget build(BuildContext context) {
@@ -109,17 +127,19 @@ class _Dots extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           // El constructor List.generate en Dart permite generar una lista con un tamaño específico y llenarla con elementos generados dinámicamente
-          children: List.generate(numDots, (index) => _Dot(index, color)),
+          children: List.generate(numDots,
+              (index) => _Dot(index, buttonPrimaryColor, buttonSecondaryColor)),
         ));
   }
 }
 
 // Widget privado para representar un punto o circulo en pantalla
 class _Dot extends StatelessWidget {
-  const _Dot(this.index, this.color);
+  const _Dot(this.index, this.buttonPrimaryColor, this.buttonSecondaryColor);
 
   final int index;
-  final Color color;
+  final Color buttonPrimaryColor;
+  final Color buttonSecondaryColor;
 
   @override
   Widget build(BuildContext context) {
@@ -139,8 +159,8 @@ class _Dot extends StatelessWidget {
         shape: BoxShape.circle,
         // Cambiar el color si el indice de este punto se corresponde la página actualmente seleccionada
         color: (pageViewIndex >= index - .5 && pageViewIndex < index + .5)
-            ? color
-            : Colors.grey,
+            ? buttonPrimaryColor
+            : buttonSecondaryColor,
       ),
     );
   }

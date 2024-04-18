@@ -33,7 +33,9 @@ class LabScreen extends StatelessWidget {
               SvgPicture.asset('assets/svg/04.svg'),
               SvgPicture.asset('assets/svg/05.svg')
             ],
-            color: Colors.amber,
+            buttonPrimaryColor: Colors.pink[200]!,
+            buttonSecondaryColor: Colors.grey[300]!,
+            buttonTop: false,
           ),
         ));
   }
