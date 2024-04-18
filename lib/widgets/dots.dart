@@ -34,14 +34,22 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) {
     // Obtener la instancia de mi PageProvider y leer la página actualmente seleccionada
     final pageViewIndex = Provider.of<PageProvider>(context).currentPage;
-    return Container(
+    // AnimatedContainer anima automáticamente los cambios en las propiedades de su contenedor, como alignment, padding, color, decoration, width, height, etc.
+    // Es especialmente útil cuando deseas que un contenedor cambie su aspecto de forma animada en respuesta a algún evento, como un botón presionado o un cambio en el estado de la aplicación.
+    return AnimatedContainer(
+      // Duración de la animación
+      duration: const Duration(milliseconds: 200),
+      // Tipo de animación
+      curve: Curves.slowMiddle,
       width: 15,
       height: 15,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         // Cambiar el color si el indice de este punto se corresponde la página actualmente seleccionada
-        color: (pageViewIndex == index) ? Colors.pink[300] : Colors.grey,
+        color: (pageViewIndex >= index - .5 && pageViewIndex < index + .5)
+            ? Colors.pink[300]
+            : Colors.grey,
       ),
     );
   }
