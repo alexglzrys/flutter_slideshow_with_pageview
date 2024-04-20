@@ -32,6 +32,8 @@ class LabScreen extends StatelessWidget {
         buttonPrimaryColor: Colors.pink[200]!,
         buttonSecondaryColor: Colors.grey[300]!,
         buttonTop: false,
+        sizeActiveButton: 16,
+        sizeDeactiveButton: 12,
       ),
     );
   }

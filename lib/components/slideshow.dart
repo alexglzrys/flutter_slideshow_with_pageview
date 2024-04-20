@@ -7,7 +7,9 @@ class Slideshow extends StatelessWidget {
       required this.slides,
       required this.buttonPrimaryColor,
       required this.buttonSecondaryColor,
-      this.buttonTop = false});
+      this.buttonTop = false,
+      this.sizeActiveButton = 12,
+      this.sizeDeactiveButton = 12});
   // Listado de widgets a mostrar dentro del PageView
   final List<Widget> slides;
   // Color de los botones indicadores
@@ -15,6 +17,9 @@ class Slideshow extends StatelessWidget {
   final Color buttonSecondaryColor;
   // Posición del contenedor de botones
   final bool buttonTop;
+  // Tamaño botones activo y desactivos
+  final double sizeActiveButton;
+  final double sizeDeactiveButton;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,9 @@ class Slideshow extends StatelessWidget {
       // Durante la creación de la instancia de _PageProvider, le pasamos información de inicialización referente a los colores.
       create: (_) => _PageProvider(
           primaryColor: buttonPrimaryColor,
-          secondaryColor: buttonSecondaryColor),
+          secondaryColor: buttonSecondaryColor,
+          sizeActive: sizeActiveButton,
+          sizeDeactive: sizeDeactiveButton),
       // Al declarar el contenedor de los botones en la parte superior, este se ve afectado por el notch, por ello el todo el contenido se declara dentro de un área segura con SafeArea
       child: SafeArea(
         child: Center(
@@ -149,27 +156,45 @@ class _Dot extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       // Tipo de animación
       curve: Curves.slowMiddle,
-      width: 15,
-      height: 15,
+      // El tamaño de cada bullet es diferente si se encuenrta activo o desactivado
+      width: isActive(pageProvider)
+          ? pageProvider.sizeActiveButton
+          : pageProvider.sizeDeactiveButton,
+      height: isActive(pageProvider)
+          ? pageProvider.sizeActiveButton
+          : pageProvider.sizeDeactiveButton,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         // Cambiar el color si el indice de este punto se corresponde la página actualmente seleccionada
-        color: (pageProvider.currentPage >= index - .5 &&
-                pageProvider.currentPage < index + .5)
+        color: isActive(pageProvider)
             ? pageProvider.buttonPrimaryColor
             : pageProvider.buttonSecondaryColor,
       ),
     );
+  }
+
+  // Método utilitario que determina si una página se encuentra activa o desactiva
+  bool isActive(_PageProvider pageProvider) {
+    return (pageProvider.currentPage >= index - .5 &&
+            pageProvider.currentPage < index + .5)
+        ? true
+        : false;
   }
 }
 
 // Provider encargado de admistrar todo lo referente a las páginas o vistas mostradas en el PageView principal de este componente
 // Extiende de ChangeNotifier para notificar los cambios
 class _PageProvider extends ChangeNotifier {
-  _PageProvider({required primaryColor, required secondaryColor}) {
+  _PageProvider(
+      {required primaryColor,
+      required secondaryColor,
+      required sizeActive,
+      required sizeDeactive}) {
     buttonPrimaryColor = primaryColor;
     buttonSecondaryColor = secondaryColor;
+    sizeActiveButton = sizeActive;
+    sizeDeactiveButton = sizeDeactive;
   }
 
   // Propiedad privada que almacena la página actual
@@ -177,6 +202,9 @@ class _PageProvider extends ChangeNotifier {
   // Estas propiedades se inicializarán de forma parezosa en el contructor de la clase
   late Color _buttonPrimaryColor;
   late Color _buttonSecondaryColor;
+  // Tamaño botones activo y desactivos
+  late double _sizeActiveButton;
+  late double _sizeDeactiveButton;
 
   // Getter para obtener la página actual
   double get currentPage => _currentPage;
@@ -199,6 +227,20 @@ class _PageProvider extends ChangeNotifier {
   Color get buttonSecondaryColor => _buttonSecondaryColor;
   set buttonSecondaryColor(Color color) {
     _buttonSecondaryColor = color;
+    notifyListeners();
+  }
+
+  // Getter y Setter tamaño boton o bullet activo
+  double get sizeActiveButton => _sizeActiveButton;
+  set sizeActiveButton(double size) {
+    _sizeActiveButton = size;
+    notifyListeners();
+  }
+
+  // Getter y Setter tamaño boton o bullet inactivo
+  double get sizeDeactiveButton => _sizeDeactiveButton;
+  set sizeDeactiveButton(double size) {
+    _sizeDeactiveButton = size;
     notifyListeners();
   }
 }
